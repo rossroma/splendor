@@ -22,7 +22,7 @@ export class GameStateImpl implements GameState {
       [GemType.Onyx]: gemsNumber,
       [GemType.GoldJoker]: 5
     }
-    this.developmentCards = initialDevelopmentCards
+    this.developmentCards = initialDevelopmentCards()
   }
 
   distributeGems(playerId: number, gems: Partial<Record<GemType, number>>) {
@@ -53,10 +53,10 @@ export class GameStateImpl implements GameState {
     if (cardIndex !== -1) {
       const card = this.developmentCards[cardIndex]
       if (this.availableGems[GemType.GoldJoker] > 0) {
-        player.reserveCard(card);
-        this.availableGems[GemType.GoldJoker]--;
+        player.reserveCard(card)
+        this.availableGems[GemType.GoldJoker]--
       } else {
-        throw new Error("No Gold Joker gems available for reservation.");
+        throw new Error('No Gold Joker gems available for reservation.')
       }
       this.developmentCards.splice(cardIndex, 1) // Remove the reserved card from available cards
     }
