@@ -1,10 +1,18 @@
 import { DevelopmentCard, GemType } from '../types'
 import { DevelopmentCardImpl } from '../models/developmentCard'
 
+enum SortType {
+  current = 'c',
+  next = 'n',
+  prev = 'p',
+  nextnext = 'nn',
+  prevprev = 'pp'
+}
+
 const cardsTable: {
   level: number
   points: number
-  cards: Record<string, number>
+  cards: Partial<Record<SortType, number>>
 }[] = [
   { level: 1, points: 0, cards: { c: 3 } },
   { level: 1, points: 0, cards: { p: 1, n: 2 } },
@@ -30,12 +38,12 @@ const gemTypeArray: GemType[] = Object.values(GemType).filter(
   gemType => gemType !== GemType.GoldJoker
 )
 
-const rules: Record<string, number> = {
-  n: 1,
-  nn: 2,
-  c: 0,
-  p: -1,
-  pp: -2
+const rules: Record<SortType, number> = {
+  [SortType.next]: 1,
+  [SortType.nextnext]: 2,
+  [SortType.current]: 0,
+  [SortType.prev]: -1,
+  [SortType.prevprev]: -2
 }
 
 // 通过下标取值，兼容负值
@@ -48,14 +56,15 @@ const getElement = <T>(arr: T[], index: number): T => {
 
 const getCards = (
   index: number,
-  cards: Record<string, number>
+  cards: Partial<Record<SortType, number>>
 ): Partial<Record<GemType, number>> => {
   const result: Partial<Record<GemType, number>> = {}
   for (const key in cards) {
-    const offset: number = rules[key]
+    const offset: number = rules[key as SortType]
     const gemIndex = index + offset
+    const gemKey = getElement(gemTypeArray, gemIndex)
 
-    result[getElement(gemTypeArray, gemIndex)] = cards[key]
+    result[gemKey] = cards[key as SortType]
   }
   return result
 }
